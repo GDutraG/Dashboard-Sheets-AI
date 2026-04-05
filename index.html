@@ -276,66 +276,108 @@ html.light .theme-toggle-thumb { left:28px; }
 .meta-values { display:flex; justify-content:space-between; font-size:0.7rem; color:var(--muted); font-family:'DM Mono',monospace; }
 
 /* ══════════════════════════════════════════
-   AI CHAT
+   CONSULTOR IA — MorphPanel
 ══════════════════════════════════════════ */
-.ai-fab {
+
+/* Color Orb */
+@property --orb-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+.color-orb {
+  width:24px; height:24px; border-radius:50%;
+  display:grid; overflow:hidden; position:relative;
+  transform:scale(1.1); flex-shrink:0;
+}
+.color-orb::before {
+  content:''; display:block; width:100%; height:100%;
+  border-radius:50%; transform:translateZ(0);
+  background:
+    conic-gradient(from calc(var(--orb-angle)*2) at 25% 70%, #C9A84C, transparent 20% 80%, #C9A84C),
+    conic-gradient(from calc(var(--orb-angle)*2) at 45% 75%, #8C7A3F, transparent 30% 60%, #8C7A3F),
+    conic-gradient(from calc(var(--orb-angle)*-3) at 80% 20%, #E8D4A0, transparent 40% 60%, #E8D4A0),
+    conic-gradient(from calc(var(--orb-angle)*2) at 15% 5%, #8C7A3F, transparent 10% 90%, #8C7A3F),
+    conic-gradient(from calc(var(--orb-angle)*1) at 20% 80%, #C9A84C, transparent 10% 90%, #C9A84C);
+  filter:blur(2px) contrast(1.5);
+  animation:orbSpin 6s linear infinite;
+}
+@keyframes orbSpin { to { --orb-angle: 360deg; } }
+
+/* Dock (botão fechado) */
+.morph-dock {
   position:fixed; bottom:28px; right:28px; z-index:50;
-  width:52px; height:52px; border-radius:50%;
-  background:var(--gold); border:none; cursor:pointer;
   display:flex; align-items:center; justify-content:center;
-  box-shadow:0 4px 20px rgba(201,168,76,0.35);
-  transition:transform 0.2s ease, box-shadow 0.2s ease;
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:20px; padding:0 14px; height:44px; gap:8px;
+  cursor:pointer; transition:border-color 0.2s, box-shadow 0.2s;
+  box-shadow:0 2px 12px rgba(0,0,0,0.15);
 }
-.ai-fab:hover { transform:scale(1.08); box-shadow:0 6px 28px rgba(201,168,76,0.45); }
-.ai-fab svg { width:22px; height:22px; color:#0D1F2D; }
-.ai-fab .badge-dot {
-  position:absolute; top:2px; right:2px;
-  width:12px; height:12px; border-radius:50%;
-  background:#4caf82; border:2px solid var(--bg);
+.morph-dock:hover { border-color:rgba(201,168,76,0.4); box-shadow:0 4px 20px rgba(0,0,0,0.2); }
+.morph-dock-label {
+  font-family:'Cormorant Garamond',serif;
+  font-size:0.9rem; font-weight:600;
+  color:var(--text); letter-spacing:0.01em;
+  white-space:nowrap;
+}
+.morph-dock-label span { color:var(--gold); }
+.morph-dock-dot {
+  width:8px; height:8px; border-radius:50%;
+  background:#4caf82; flex-shrink:0;
+  animation:pulse 2s ease-in-out infinite;
 }
 
-.ai-panel {
-  position:fixed; bottom:92px; right:28px; z-index:50;
-  width:380px; max-height:540px;
-  background:var(--surface); border:1px solid var(--border); border-radius:18px;
-  display:flex; flex-direction:column; overflow:hidden;
+/* Panel (aberto) */
+.morph-panel {
+  position:fixed; bottom:28px; right:28px; z-index:50;
+  width:360px;
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:14px; overflow:hidden;
   box-shadow:0 8px 40px rgba(0,0,0,0.25);
-  transform:scale(0.92) translateY(16px); opacity:0; pointer-events:none;
-  transition:transform 0.25s cubic-bezier(0.16,1,0.3,1), opacity 0.2s ease;
+  display:flex; flex-direction:column;
+  transform:scale(0.94) translateY(12px); opacity:0; pointer-events:none;
+  transition:transform 0.3s cubic-bezier(0.16,1,0.3,1), opacity 0.2s ease;
 }
-.ai-panel.open { transform:scale(1) translateY(0); opacity:1; pointer-events:all; }
+.morph-panel.open { transform:scale(1) translateY(0); opacity:1; pointer-events:all; }
 
-.ai-panel-header {
-  padding:16px 18px 12px; border-bottom:1px solid var(--border);
+/* Panel header */
+.morph-panel-header {
+  padding:12px 16px 10px; border-bottom:1px solid var(--border);
   display:flex; align-items:center; justify-content:space-between;
   flex-shrink:0;
 }
-.ai-header-left { display:flex; align-items:center; gap:10px; }
-.ai-avatar {
-  width:32px; height:32px; border-radius:50%; background:rgba(201,168,76,0.15);
-  display:flex; align-items:center; justify-content:center; font-size:14px;
+.morph-header-left { display:flex; align-items:center; gap:9px; }
+.morph-header-title {
+  font-family:'Cormorant Garamond',serif;
+  font-size:0.95rem; font-weight:600; color:var(--text);
 }
-.ai-name { font-size:0.85rem; font-weight:600; color:var(--text); }
-.ai-status { font-size:0.7rem; color:var(--success); display:flex; align-items:center; gap:4px; }
-.ai-status::before { content:''; width:5px; height:5px; border-radius:50%; background:var(--success); }
-.ai-close {
+.morph-header-title span { color:var(--gold); }
+.morph-header-status {
+  font-size:0.68rem; color:var(--success);
+  display:flex; align-items:center; gap:4px;
+}
+.morph-header-status::before { content:''; width:5px; height:5px; border-radius:50%; background:var(--success); }
+.morph-close {
   background:none; border:none; cursor:pointer; color:var(--muted);
-  padding:4px; border-radius:6px; transition:color 0.2s ease;
+  padding:4px; border-radius:6px; transition:color 0.2s;
 }
-.ai-close:hover { color:var(--text); }
+.morph-close:hover { color:var(--text); }
 
-.ai-messages {
-  flex:1; overflow-y:auto; padding:14px 16px; display:flex;
-  flex-direction:column; gap:10px; background:var(--chat-bg);
+/* Messages */
+.morph-messages {
+  flex:1; overflow-y:auto; padding:14px 16px;
+  display:flex; flex-direction:column; gap:10px;
+  background:var(--chat-bg); max-height:320px;
 }
-.ai-messages::-webkit-scrollbar { width:3px; }
-.ai-messages::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+.morph-messages::-webkit-scrollbar { width:3px; }
+.morph-messages::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
 
 .ai-msg { display:flex; gap:8px; align-items:flex-end; }
 .ai-msg.user { flex-direction:row-reverse; }
 .ai-bubble {
-  max-width:82%; padding:10px 13px; border-radius:14px; font-size:0.82rem;
-  line-height:1.55; color:var(--text); background:var(--chat-bubble-ai);
+  max-width:82%; padding:10px 13px; border-radius:14px;
+  font-size:0.82rem; line-height:1.55;
+  color:var(--text); background:var(--chat-bubble-ai);
   border:1px solid var(--border);
 }
 .ai-msg.user .ai-bubble { background:var(--chat-bubble-user); color:#0D1F2D; border-color:transparent; font-weight:500; }
@@ -344,11 +386,12 @@ html.light .ai-msg.user .ai-bubble { color:#F7F4EF; }
 
 .ai-typing { display:flex; gap:4px; align-items:center; padding:10px 13px; }
 .ai-typing span { width:6px; height:6px; border-radius:50%; background:var(--muted); animation:typingDot 1.2s ease-in-out infinite; }
-.ai-typing span:nth-child(2) { animation-delay:0.2s; }
-.ai-typing span:nth-child(3) { animation-delay:0.4s; }
+.ai-typing span:nth-child(2){ animation-delay:0.2s; }
+.ai-typing span:nth-child(3){ animation-delay:0.4s; }
 @keyframes typingDot { 0%,80%,100%{transform:scale(0.7);opacity:0.4} 40%{transform:scale(1);opacity:1} }
 
-.ai-suggestions { padding:8px 12px; display:flex; gap:6px; flex-wrap:wrap; border-top:1px solid var(--border); flex-shrink:0; }
+/* Suggestions */
+.morph-suggestions { padding:8px 12px; display:flex; gap:6px; flex-wrap:wrap; border-top:1px solid var(--border); flex-shrink:0; }
 .ai-suggestion {
   font-size:0.72rem; padding:5px 10px; border-radius:20px;
   background:var(--surface2); border:1px solid var(--border); color:var(--muted);
@@ -356,21 +399,53 @@ html.light .ai-msg.user .ai-bubble { color:#F7F4EF; }
 }
 .ai-suggestion:hover { border-color:var(--gold); color:var(--text); }
 
-.ai-input-row { padding:10px 14px; border-top:1px solid var(--border); display:flex; gap:8px; align-items:center; flex-shrink:0; }
-.ai-input {
-  flex:1; background:var(--surface2); border:1px solid var(--border); border-radius:20px;
-  color:var(--text); font-family:'DM Sans',sans-serif; font-size:0.82rem;
-  padding:9px 14px; outline:none; transition:border-color 0.2s;
+/* Input area — MorphPanel style */
+.morph-input-area {
+  padding:10px 12px; border-top:1px solid var(--border);
+  display:flex; flex-direction:column; gap:8px; flex-shrink:0;
 }
-.ai-input:focus { border-color:var(--gold); }
-.ai-input::placeholder { color:var(--muted); }
-.ai-send {
-  width:34px; height:34px; border-radius:50%; background:var(--gold);
+.morph-input-top {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 2px;
+}
+.morph-input-label {
+  display:flex; align-items:center; gap:7px;
+  font-family:'Cormorant Garamond',serif;
+  font-size:0.82rem; color:var(--muted);
+}
+.morph-input-hint {
+  display:flex; align-items:center; gap:4px;
+}
+.morph-kbd {
+  font-size:0.62rem; color:var(--muted);
+  border:1px solid var(--border); border-radius:4px;
+  padding:1px 5px; font-family:'DM Mono',monospace;
+  background:var(--surface2);
+}
+.morph-textarea {
+  width:100%; resize:none; border:none; outline:none;
+  background:transparent; font-family:'DM Sans',sans-serif;
+  font-size:0.85rem; color:var(--text); line-height:1.5;
+  padding:4px 2px; min-height:52px; max-height:100px;
+  scrollbar-width:none;
+}
+.morph-textarea::placeholder { color:var(--muted); }
+.morph-textarea::-webkit-scrollbar { display:none; }
+.morph-input-footer {
+  display:flex; align-items:center; justify-content:flex-end;
+}
+.morph-send {
+  width:30px; height:30px; border-radius:50%; background:var(--gold);
   border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;
   transition:opacity 0.2s; flex-shrink:0;
 }
-.ai-send:hover { opacity:0.85; }
-.ai-send svg { width:14px; height:14px; color:#0D1F2D; }
+.morph-send:hover { opacity:0.85; }
+.morph-send svg { width:13px; height:13px; color:#0D1F2D; }
+
+@media(max-width:700px){
+  .morph-dock { bottom:20px; right:16px; }
+  .morph-panel { width:calc(100vw - 32px); right:16px; bottom:20px; }
+}
 
 /* ══════════════════════════════════════════
    ANIMAÇÕES
@@ -593,41 +668,51 @@ html.light .ai-msg.user .ai-bubble { color:#F7F4EF; }
 </div><!-- /container -->
 </div><!-- /dashboard -->
 
-<!-- AI FAB -->
-<button class="ai-fab" id="aiFab" onclick="toggleAI()" title="Assistente financeiro IA" style="display:none">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M12 2a10 10 0 0110 10c0 5.52-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2z"/>
-    <path d="M8 12h.01M12 12h.01M16 12h.01"/>
-  </svg>
-  <div class="badge-dot"></div>
-</button>
+<!-- CONSULTOR IA — MorphPanel -->
+<div class="morph-dock" id="morphDock" onclick="toggleAI()" style="display:none">
+  <div class="color-orb"></div>
+  <div class="morph-dock-label">Consultor<span>IA</span></div>
+  <div class="morph-dock-dot"></div>
+</div>
 
-<!-- AI PANEL -->
-<div class="ai-panel" id="aiPanel">
-  <div class="ai-panel-header">
-    <div class="ai-header-left">
-      <div class="ai-avatar">✦</div>
+<div class="morph-panel" id="aiPanel">
+  <div class="morph-panel-header">
+    <div class="morph-header-left">
+      <div class="color-orb"></div>
       <div>
-        <div class="ai-name">Assistente GDG</div>
-        <div class="ai-status">Online · analisando seus dados</div>
+        <div class="morph-header-title">Consultor<span>IA</span></div>
+        <div class="morph-header-status">Online · analisando seus dados</div>
       </div>
     </div>
-    <button class="ai-close" onclick="toggleAI()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    <button class="morph-close" onclick="toggleAI()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
     </button>
   </div>
-  <div class="ai-messages" id="aiMessages"></div>
-  <div class="ai-suggestions" id="aiSuggestions">
+  <div class="morph-messages" id="aiMessages"></div>
+  <div class="morph-suggestions" id="aiSuggestions">
     <button class="ai-suggestion" onclick="enviarMsgIA(this.textContent)">Posso comprar um carro?</button>
     <button class="ai-suggestion" onclick="enviarMsgIA(this.textContent)">Quando atinjo minha reserva?</button>
     <button class="ai-suggestion" onclick="enviarMsgIA(this.textContent)">Onde estou gastando mais?</button>
     <button class="ai-suggestion" onclick="enviarMsgIA(this.textContent)">Como está minha poupança?</button>
   </div>
-  <div class="ai-input-row">
-    <input class="ai-input" id="aiInput" placeholder="Pergunte algo sobre suas finanças…" onkeydown="if(event.key==='Enter')enviarMsgIA()">
-    <button class="ai-send" onclick="enviarMsgIA()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2L15 22 11 13 2 9l20-7z"/></svg>
-    </button>
+  <div class="morph-input-area">
+    <div class="morph-input-top">
+      <div class="morph-input-label">
+        <div class="color-orb" style="width:18px;height:18px"></div>
+        Pergunte sobre suas finanças
+      </div>
+      <div class="morph-input-hint">
+        <kbd class="morph-kbd">⌘</kbd>
+        <kbd class="morph-kbd">Enter</kbd>
+      </div>
+    </div>
+    <textarea class="morph-textarea" id="aiInput" placeholder="Ex: Onde estou gastando mais este mês?" rows="2"
+      onkeydown="if(event.key==='Enter'&&(event.metaKey||event.ctrlKey))enviarMsgIA()"></textarea>
+    <div class="morph-input-footer">
+      <button class="morph-send" onclick="enviarMsgIA()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2L15 22 11 13 2 9l20-7z"/></svg>
+      </button>
+    </div>
   </div>
 </div>
 
@@ -715,7 +800,7 @@ async function iniciarDashboard() {
   await buscarDados(true);
   document.getElementById("loadingScreen").style.display = "none";
   document.getElementById("dashboard").style.display = "block";
-  document.getElementById("aiFab").style.display = "flex";
+  document.getElementById("morphDock").style.display = "flex";
   iniciarChat();
 }
 
@@ -1115,6 +1200,8 @@ let chatHistory = [];
 function toggleAI() {
   aiOpen = !aiOpen;
   document.getElementById("aiPanel").classList.toggle("open", aiOpen);
+  document.getElementById("morphDock").style.display = aiOpen ? "none" : "flex";
+  if (aiOpen) setTimeout(() => document.getElementById("aiInput")?.focus(), 300);
 }
 
 function iniciarChat() {
@@ -1128,7 +1215,7 @@ function adicionarMsgIA(texto, tipo="ai") {
   const div = document.createElement("div");
   div.className = "ai-msg" + (isUser?" user":"");
   div.innerHTML = `
-    ${!isUser?`<div class="ai-avatar" style="font-size:12px;flex-shrink:0">✦</div>`:""}
+    ${!isUser?`<div class="color-orb" style="width:20px;height:20px;flex-shrink:0;margin-bottom:2px"></div>`:""}
     <div>
       <div class="ai-bubble">${texto.replace(/\n/g,"<br>").replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")}</div>
       <div class="ai-bubble-time" style="${isUser?"text-align:right":""}">${hora}</div>
@@ -1141,7 +1228,7 @@ function mostrarTyping() {
   const container = document.getElementById("aiMessages");
   const div = document.createElement("div");
   div.className = "ai-msg"; div.id = "aiTyping";
-  div.innerHTML = `<div class="ai-avatar" style="font-size:12px;flex-shrink:0">✦</div>
+  div.innerHTML = `<div class="color-orb" style="width:20px;height:20px;flex-shrink:0;margin-bottom:2px"></div>
     <div class="ai-bubble ai-typing"><span></span><span></span><span></span></div>`;
   container.appendChild(div);
   container.scrollTop = container.scrollHeight;
@@ -1153,6 +1240,7 @@ async function enviarMsgIA(textoOverride) {
   const texto = textoOverride || input.value.trim();
   if(!texto || !DATA) return;
   input.value = "";
+  input.style.height = "auto";
   document.getElementById("aiSuggestions").style.display = "none";
 
   adicionarMsgIA(texto, "user");
@@ -1233,8 +1321,13 @@ REGRAS:
     adicionarMsgIA(resposta);
   } catch(err) {
     removerTyping();
-    adicionarMsgIA("Não consegui conectar ao assistente agora. Verifique sua conexão e tente novamente.");
-    console.error(err);
+    console.error("Erro IA:", err);
+    const msg = err.message?.includes("Failed to fetch")
+      ? "Não consegui conectar ao servidor. Verifique sua conexão."
+      : err.message?.includes("HTTP")
+      ? "Erro no servidor (" + err.message + "). Tente novamente."
+      : "Erro: " + err.message;
+    adicionarMsgIA(msg);
   }
 }
 </script>
